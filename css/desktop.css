@@ -1,0 +1,112 @@
+/* ============ CRT overlay shell (positioned by JS over the 3D screen) ============ */
+#crt{position:fixed;z-index:20;opacity:0;visibility:hidden;
+  transition:opacity .5s ease;pointer-events:none;
+  /* left/top/width/height set by scene.js */}
+#crt.live{opacity:1;visibility:visible;pointer-events:auto;}
+#crt-frame{position:absolute;inset:0;overflow:hidden;border-radius:5% / 7%;
+  background:#0b0d07;
+  box-shadow:inset 0 0 38px rgba(0,0,0,.95), inset 0 0 110px rgba(0,0,0,.6);}
+
+.crt-scanlines{position:absolute;inset:0;pointer-events:none;z-index:9;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.20) 3px,rgba(0,0,0,.20) 3px);
+  mix-blend-mode:multiply;opacity:.7;}
+.crt-vignette{position:absolute;inset:0;pointer-events:none;z-index:10;
+  background:radial-gradient(120% 120% at 50% 50%,transparent 58%,rgba(0,0,0,.55) 100%);}
+.crt-flicker{position:absolute;inset:0;pointer-events:none;z-index:11;background:#ffce8a;
+  opacity:0;mix-blend-mode:overlay;animation:flicker 5s steps(60) infinite;}
+@keyframes flicker{0%,100%{opacity:.02}3%{opacity:.06}6%{opacity:.01}50%{opacity:.04}52%{opacity:.0}}
+
+/* ============ desktop ============ */
+#crt-screen{position:absolute;inset:0;z-index:5;overflow:hidden;
+  font-family:"VT323",monospace;color:#ffc987;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(240,166,76,.07), transparent 60%),
+    #0b0d07;
+  text-shadow:0 0 5px rgba(255,178,89,.55);
+  --phos:#ffc987; --phos-dim:#c08a4e; --phos-bright:#ffe7c2; --line:rgba(255,178,89,.28);
+  container-type:inline-size;}
+#crt-screen *{cursor:default;}
+
+/* menubar */
+.menubar{position:absolute;top:0;left:0;right:0;height:7.5%;min-height:18px;display:flex;
+  align-items:center;gap:1.4em;padding:0 1.2em;z-index:30;
+  border-bottom:1px solid var(--line);background:rgba(240,166,76,.08);font-size:clamp(11px,3.4cqw,22px);}
+.menubar .mb-logo{color:var(--phos-bright);font-weight:400;letter-spacing:.04em;}
+.menubar .mb-item{opacity:.75;}
+.menubar .mb-spacer{flex:1;}
+.menubar .mb-clock{color:var(--phos-bright);font-variant-numeric:tabular-nums;letter-spacing:.05em;}
+
+/* icon grid */
+.icons{position:absolute;top:11%;left:2.5%;display:flex;flex-direction:column;gap:4.5%;z-index:15;}
+.icon{display:flex;flex-direction:column;align-items:center;gap:.15em;width:20cqw;max-width:120px;
+  padding:.5em .2em;cursor:pointer;border:1px solid transparent;border-radius:3px;}
+.icon:hover{background:rgba(255,178,89,.10);}
+.icon.sel{background:rgba(255,178,89,.18);border-color:var(--line);}
+.icon-glyph{font-family:"Silkscreen",monospace;font-size:clamp(13px,5.2cqw,30px);line-height:1;
+  width:1.9em;height:1.9em;display:grid;place-items:center;border:1.5px solid var(--phos);
+  border-radius:4px;color:var(--phos-bright);box-shadow:0 0 8px rgba(255,178,89,.25),inset 0 0 8px rgba(255,178,89,.12);}
+.icon-label{font-size:clamp(11px,3.4cqw,20px);letter-spacing:.05em;text-align:center;}
+
+/* boot text */
+.boot{position:absolute;inset:0;z-index:40;padding:6% 6%;font-size:clamp(11px,3.2cqw,21px);
+  line-height:1.35;white-space:pre-wrap;color:var(--phos);overflow:hidden;background:#0b0d07;}
+.boot .ok{color:#9ad17a;}
+.boot .cur{display:inline-block;width:.6em;height:1em;background:var(--phos);
+  transform:translateY(.18em);animation:blink 1s steps(1) infinite;}
+@keyframes blink{50%{opacity:0}}
+
+/* ============ windows ============ */
+.win{position:absolute;z-index:20;display:flex;flex-direction:column;pointer-events:auto;
+  background:#0c0f08;border:1.5px solid var(--phos);
+  box-shadow:0 0 0 1px rgba(0,0,0,.6),0 8px 30px rgba(0,0,0,.6),0 0 22px rgba(255,178,89,.10);
+  min-width:38%;}
+.win.front{z-index:25;}
+.win-bar{display:flex;align-items:center;gap:.5em;height:1.9em;padding:0 .55em;cursor:grab;
+  background:repeating-linear-gradient(to bottom,var(--phos) 0,var(--phos) 1.5px,#0c0f08 1.5px,#0c0f08 3px);
+  border-bottom:1.5px solid var(--phos);user-select:none;}
+.win-bar:active{cursor:grabbing;}
+.win-title{font-size:clamp(12px,3.2cqw,21px);background:#0c0f08;color:var(--phos-bright);
+  padding:0 .5em;letter-spacing:.06em;line-height:1.5;}
+.win-bar-sp{flex:1;}
+.win-close{width:1.15em;height:1.15em;display:grid;place-items:center;background:#0c0f08;
+  border:1.5px solid var(--phos);color:var(--phos-bright);font-size:clamp(11px,2.8cqw,18px);
+  line-height:1;cursor:pointer;}
+.win-close:hover{background:var(--phos);color:#0c0f08;}
+.win-body{padding:5.5% 6%;overflow-y:auto;font-size:clamp(12px,3.3cqw,22px);line-height:1.5;
+  color:var(--phos);max-height:100%;}
+.win-body::-webkit-scrollbar{width:9px;}
+.win-body::-webkit-scrollbar-thumb{background:var(--phos-dim);}
+.win-body::-webkit-scrollbar-track{background:rgba(255,178,89,.06);}
+
+/* content helpers */
+.kicker{color:var(--phos-dim);letter-spacing:.22em;font-size:.78em;text-transform:uppercase;margin-bottom:.5em;}
+.h1{color:var(--phos-bright);font-size:1.5em;line-height:1.1;margin-bottom:.5em;letter-spacing:.02em;}
+.h2{color:var(--phos-bright);font-size:1.15em;margin:1.1em 0 .4em;}
+.lead{margin-bottom:.8em;}
+.em{color:var(--phos-bright);}
+.win-body p{margin-bottom:.7em;}
+.win-body hr{border:none;border-top:1px solid var(--line);margin:.9em 0;}
+.list{list-style:none;display:flex;flex-direction:column;gap:.55em;}
+.list li{display:flex;gap:.6em;}
+.list .num{color:var(--phos-bright);}
+.stack-grp{margin-bottom:.9em;}
+.stack-grp .lbl{color:var(--phos-dim);letter-spacing:.14em;font-size:.82em;text-transform:uppercase;margin-bottom:.25em;}
+.chips{display:flex;flex-wrap:wrap;gap:.4em;}
+.chip{border:1px solid var(--phos);padding:.05em .55em;color:var(--phos-bright);
+  box-shadow:inset 0 0 7px rgba(255,178,89,.10);}
+.contact-row{display:flex;gap:.7em;align-items:baseline;margin-bottom:.5em;}
+.contact-row .k{color:var(--phos-dim);min-width:5.5em;letter-spacing:.1em;text-transform:uppercase;font-size:.85em;}
+.contact-row a{color:var(--phos-bright);text-decoration:none;border-bottom:1px dotted var(--phos-dim);cursor:pointer;}
+.contact-row a:hover{background:var(--phos);color:#0c0f08;}
+.big-cta{color:var(--phos-bright);font-size:1.5em;letter-spacing:.06em;margin:.2em 0 .8em;}
+
+/* taskbar */
+.taskbar{position:absolute;left:0;right:0;bottom:0;height:7%;min-height:16px;z-index:30;
+  display:flex;align-items:center;gap:.5em;padding:0 1em;border-top:1px solid var(--line);
+  background:rgba(240,166,76,.08);font-size:clamp(10px,3cqw,19px);}
+.task{opacity:.6;padding:0 .5em;cursor:pointer;border:1px solid transparent;}
+.task.on{opacity:1;border-color:var(--line);background:rgba(255,178,89,.12);color:var(--phos-bright);}
+.taskbar .ts-sp{flex:1;}
+.taskbar .ts-net{color:var(--phos-dim);letter-spacing:.1em;}
+
+.dim{color:var(--phos-dim);}
