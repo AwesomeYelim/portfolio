@@ -1,6 +1,6 @@
 # Yelim Hong — Portfolio
 
-**Live site:** https://hongyelim.namo.site
+**Live site:** https://jiran-ylhong.namo.site
 
 Three.js r128 기반 레트로 방 씬 포트폴리오.  
 CRT 모니터 줌인 → 레트로 OS UI 진입 플로우.
