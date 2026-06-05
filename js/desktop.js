@@ -97,7 +97,7 @@
       const ic = el("div", "icon");
       ic.dataset.app = id;
       ic.innerHTML = `<div class="icon-glyph">${a.glyph}</div><div class="icon-label">${a.label}</div>`;
-      ic.addEventListener("click", () => { selectIcon(ic); openWindow(id); });
+      ic.addEventListener("click", () => { window.__click && window.__click(); selectIcon(ic); openWindow(id); });
       ic.addEventListener("dblclick", () => openWindow(id));
       icons.appendChild(ic);
     });
@@ -115,7 +115,7 @@
     tb.innerHTML = tasksHtml + `<span class="ts-sp"></span><span class="ts-net">▮▮▮ ONLINE</span>`;
     screen.appendChild(tb);
     tb.querySelectorAll(".task").forEach(t => {
-      t.addEventListener("click", () => toggleWindow(t.dataset.task));
+      t.addEventListener("click", () => { window.__click && window.__click(); toggleWindow(t.dataset.task); });
       taskItems[t.dataset.task] = t;
     });
 
@@ -162,7 +162,7 @@
     winLayer.appendChild(w);
     openWins[id] = w;
     if (taskItems[id]) taskItems[id].classList.add("on");
-    w.querySelector(".win-close").addEventListener("click", e => { e.stopPropagation(); closeWindow(id); });
+    w.querySelector(".win-close").addEventListener("click", e => { e.stopPropagation(); window.__click && window.__click(); closeWindow(id); });
     w.addEventListener("pointerdown", () => focusWindow(id));
     makeDraggable(w, w.querySelector(".win-bar"));
     focusWindow(id);

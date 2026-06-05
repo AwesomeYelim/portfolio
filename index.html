@@ -4,9 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Yelim Hong — Software Engineer</title>
+<link rel="icon" type="image/png" href="favicon.png?v=6">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=6">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<!-- hide loader text until web fonts are ready, so the pixel title doesn't visibly swap from a fallback font -->
+<style>
+  .fonts-loading .loader-name,.fonts-loading .loader-role,.fonts-loading .loader-row{opacity:0;}
+  .loader-name,.loader-role,.loader-row{transition:opacity .35s ease;}
+</style>
+<script>
+  (function () {
+    var d = document.documentElement;
+    d.classList.add("fonts-loading");
+    function reveal() { d.classList.remove("fonts-loading"); }
+    if (document.fonts && document.fonts.ready) {
+      try { document.fonts.load('700 62px "Silkscreen"'); document.fonts.load('400 13px "Space Mono"'); } catch (e) {}
+      document.fonts.ready.then(reveal);
+      setTimeout(reveal, 2500); // fail-safe: never keep text hidden if a font never loads
+    } else {
+      reveal();
+    }
+  })();
+</script>
 <link rel="stylesheet" href="css/room.css">
 <link rel="stylesheet" href="css/desktop.css">
 </head>

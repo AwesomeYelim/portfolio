@@ -1,0 +1,11 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "description": "Yelim Hong portfolio — Three.js retro room scene",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes browser-sync start --server --port 8000 --no-open --no-notify --files \"index.html,css/*.css,js/*.js,assets/**\"",
+    "deploy": "node scripts/deploy.mjs"
+  }
+}
