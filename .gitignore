@@ -1,0 +1,10 @@
+# Secrets — MCP server config holds a Bearer token. NEVER commit.
+.mcp.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Node (deploy script tooling, if any local installs)
+node_modules/
