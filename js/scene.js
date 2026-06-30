@@ -265,8 +265,20 @@
     if (m) { m.metalness = 0.0; m.roughness = 0.85; m.transparent = false; m.depthWrite = true; m.emissiveIntensity = 1.0; m.needsUpdate = true; }
   }
 
+  // identity for idle labels — published by desktop.js from data/profile.web.json;
+  // falls back to these literals if the data hasn't loaded yet.
+  function idLabels() {
+    const i = window.__IDENTITY__ || {};
+    return {
+      name: i.nameMain || "YELIM HONG",
+      role: i.sceneRole || "SOFTWARE ENGINEER",
+      tags: i.sceneTags || "backend · infra",
+    };
+  }
+
   // clean idle screen drawn to a canvas (covers the model's baked terminal text)
   function makeIdleScreen() {
+    const id = idLabels();
     const c = document.createElement("canvas"); c.width = 760; c.height = 540;
     const x = c.getContext("2d");
     x.fillStyle = "#0a0c07"; x.fillRect(0, 0, 760, 540);
@@ -276,9 +288,9 @@
     x.fillStyle = g; x.fillRect(0, 0, 760, 540);
     x.textAlign = "center";
     x.fillStyle = "#ffcf94"; x.shadowColor = "rgba(255,180,90,.8)"; x.shadowBlur = 14;
-    x.font = "78px 'VT323', monospace"; x.fillText("YELIM HONG", 380, 240);
+    x.font = "78px 'VT323', monospace"; x.fillText(id.name, 380, 240);
     x.font = "34px 'VT323', monospace"; x.fillStyle = "#d39a5e";
-    x.fillText("software · backend · infra", 380, 292);
+    x.fillText(id.tags, 380, 292);
     x.shadowBlur = 8; x.fillStyle = "#ffcf94"; x.font = "30px 'VT323', monospace";
     x.fillText("▸ CLICK TO ENTER", 380, 372);
     // scanlines
@@ -292,6 +304,7 @@
 
   // "YELIM HONG" label drawn onto the idle screen (far view); covered by the HTML OS when zoomed
   function makeScreenLabel() {
+    const id = idLabels();
     const W = 900, H = 720;
     const c = document.createElement("canvas"); c.width = W; c.height = H;
     const x = c.getContext("2d");
@@ -299,11 +312,11 @@
     x.textAlign = "center";
     x.fillStyle = "#ffce93"; x.shadowColor = "rgba(255,180,90,.95)"; x.shadowBlur = 22;
     x.font = "700 104px 'VT323', monospace";
-    x.fillText("YELIM HONG", W / 2, H / 2 - 26);
+    x.fillText(id.name, W / 2, H / 2 - 26);
     x.shadowBlur = 12; x.fillStyle = "#d79b5e"; x.font = "46px 'VT323', monospace";
-    x.fillText("SOFTWARE ENGINEER", W / 2, H / 2 + 34);
+    x.fillText(id.role, W / 2, H / 2 + 34);
     x.fillStyle = "#cf9256"; x.font = "38px 'VT323', monospace";
-    x.fillText("backend · infra", W / 2, H / 2 + 80);
+    x.fillText(id.tags, W / 2, H / 2 + 80);
     x.fillStyle = "#ffce93"; x.shadowBlur = 14; x.font = "40px 'VT323', monospace";
     x.fillText("▸ CLICK TO ENTER", W / 2, H / 2 + 178);
     const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding;
