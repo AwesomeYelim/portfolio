@@ -51,7 +51,9 @@ body{position:fixed;inset:0;touch-action:none;}
 .loader-name{font-family:"Silkscreen",monospace;font-weight:700;font-size:clamp(30px,6.5vw,62px);
   letter-spacing:.04em;color:var(--cream);
   text-shadow:0 0 18px rgba(255,178,89,.35);}
-.loader-role{margin-top:16px;font-size:clamp(10px,1.6vw,13px);letter-spacing:.32em;
+/* .26em (was .32em): the role line gained a 4th segment and at .32em it filled
+   557 of 560px — any font-metric shift orphaned "INFRA" onto a second line. */
+.loader-role{margin-top:16px;font-size:clamp(10px,1.6vw,13px);letter-spacing:.26em;
   color:var(--amber);opacity:.85;text-align:center;}
 .loader-bar{margin-top:46px;width:100%;height:2px;background:rgba(233,200,154,.16);overflow:hidden;}
 .loader-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--amber),var(--glow));

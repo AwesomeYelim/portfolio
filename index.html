@@ -57,7 +57,10 @@
   <div id="loader">
     <div class="loader-inner">
       <div class="loader-name">YELIM&nbsp;HONG</div>
-      <div class="loader-role">SOFTWARE&nbsp;ENGINEER · BACKEND&nbsp;·&nbsp;INFRA</div>
+      <!-- Kept literal on purpose: the loader paints before data/profile.web.json
+           is fetched, so it cannot be data-driven without a visible text swap.
+           Mirror identity.sceneRole + identity.sceneTags when those change. -->
+      <div class="loader-role">SOFTWARE&nbsp;ENGINEER · BACKEND&nbsp;·&nbsp;SECURITY&nbsp;·&nbsp;INFRA</div>
       <div class="loader-bar"><div class="loader-bar-fill" id="barFill"></div></div>
       <div class="loader-row">
         <span class="loader-pct" id="pct">0%</span>
