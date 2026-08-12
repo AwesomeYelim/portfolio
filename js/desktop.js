@@ -64,17 +64,35 @@
   }
   publishIdentity(MODEL.identity);
 
+  // Data sources, tried in order. The relative path works when the site serves
+  // the repo as-is (local / GitHub Pages); on namo.site only js/ is served from
+  // the jsDelivr CDN, so the relative fetch 404s and we fall through to the CDN
+  // copy — without it the page silently renders the lean FALLBACK_MODEL.
+  const DATA_URLS = [
+    "data/profile.web.json",
+    "https://cdn.jsdelivr.net/gh/AwesomeYelim/portfolio@master/data/profile.web.json",
+  ];
+
+  async function loadModel() {
+    for (const url of DATA_URLS) {
+      try {
+        const r = await fetch(url, { cache: "no-cache" });
+        if (!r.ok) continue;
+        const d = await r.json();
+        if (d && d.apps && d.order) return d;
+      } catch { /* try the next source */ }
+    }
+    return null;
+  }
+
   // load the single-source data; rebuild chrome if we're already mounted (race-safe).
-  fetch("data/profile.web.json", { cache: "no-cache" })
-    .then(r => (r.ok ? r.json() : null))
-    .then(d => {
-      if (!d || !d.apps || !d.order) return;
-      MODEL = d;
-      currentLang = d.defaultLang || currentLang;
-      publishIdentity(d.identity);
-      if (screen) buildChrome();
-    })
-    .catch(() => { /* keep fallback */ });
+  loadModel().then(d => {
+    if (!d) return;                       // keep fallback
+    MODEL = d;
+    currentLang = d.defaultLang || currentLang;
+    publishIdentity(d.identity);
+    if (screen) buildChrome();
+  });
 
   let screen = null, winLayer = null, taskItems = {}, zTop = 30, booted = false, clockTimer = null;
   const openWins = {}; // id -> win element

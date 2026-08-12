@@ -24,7 +24,9 @@
     #0b0d07;
   text-shadow:0 0 5px rgba(255,178,89,.55);
   --phos:#ffc987; --phos-dim:#c08a4e; --phos-bright:#ffe7c2; --line:rgba(255,178,89,.28);
-  container-type:inline-size;}
+  /* `size` (not inline-size) so cqh is available — the icon column needs to
+     scale against screen HEIGHT, not just width, to fit all apps. */
+  container-type:size;}
 #crt-screen *{cursor:default;}
 
 /* menubar */
@@ -36,16 +38,27 @@
 .menubar .mb-spacer{flex:1;}
 .menubar .mb-clock{color:var(--phos-bright);font-variant-numeric:tabular-nums;letter-spacing:.05em;}
 
-/* icon grid */
-.icons{position:absolute;top:11%;left:2.5%;display:flex;flex-direction:column;gap:4.5%;z-index:15;}
-.icon{display:flex;flex-direction:column;align-items:center;gap:.15em;width:20cqw;max-width:120px;
-  padding:.5em .2em;cursor:pointer;border:1px solid transparent;border-radius:3px;}
+/* icon grid — bounded between menubar and taskbar so the column can never
+   spill behind them. Glyph/label scale off the SMALLER of width and height so
+   adding apps shrinks the icons instead of overflowing the screen. */
+.icons{position:absolute;top:10%;left:2.5%;bottom:8.5%;display:flex;flex-direction:column;
+  justify-content:space-evenly;gap:.25em;z-index:15;
+  /* safety net: if the app count ever outgrows the cqh sizing below, scroll
+     rather than spill behind the taskbar */
+  overflow-y:auto;scrollbar-width:none;}
+.icons::-webkit-scrollbar{width:0;}
+.icon{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:.1em;
+  width:20cqw;max-width:120px;
+  padding:.25em .2em;cursor:pointer;border:1px solid transparent;border-radius:3px;}
 .icon:hover{background:rgba(255,178,89,.10);}
 .icon.sel{background:rgba(255,178,89,.18);border-color:var(--line);}
-.icon-glyph{font-family:"Silkscreen",monospace;font-size:clamp(13px,5.2cqw,30px);line-height:1;
-  width:1.9em;height:1.9em;display:grid;place-items:center;border:1.5px solid var(--phos);
+/* A rendered icon is ~2.9x its glyph font-size tall; 6 icons must fit the
+   ~81cqh band between menubar and taskbar, so cap the glyph at ~4cqh. */
+.icon-glyph{font-family:"Silkscreen",monospace;font-size:clamp(10px,min(4.6cqw,3.95cqh),28px);line-height:1;
+  width:1.75em;height:1.75em;display:grid;place-items:center;border:1.5px solid var(--phos);
   border-radius:4px;color:var(--phos-bright);box-shadow:0 0 8px rgba(255,178,89,.25),inset 0 0 8px rgba(255,178,89,.12);}
-.icon-label{font-size:clamp(11px,3.4cqw,20px);letter-spacing:.05em;text-align:center;}
+.icon-label{font-size:clamp(8px,min(3cqw,2.4cqh),18px);letter-spacing:.05em;text-align:center;
+  white-space:nowrap;line-height:1.15;}
 
 /* boot text */
 .boot{position:absolute;inset:0;z-index:40;padding:6% 6%;font-size:clamp(11px,3.2cqw,21px);
@@ -59,9 +72,9 @@
 .win{position:absolute;z-index:20;display:flex;flex-direction:column;pointer-events:auto;
   background:#0c0f08;border:1.5px solid var(--phos);
   box-shadow:0 0 0 1px rgba(0,0,0,.6),0 8px 30px rgba(0,0,0,.6),0 0 22px rgba(255,178,89,.10);
-  min-width:38%;}
+  min-width:38%;overflow:hidden;}
 .win.front{z-index:25;}
-.win-bar{display:flex;align-items:center;gap:.5em;height:1.9em;padding:0 .55em;cursor:grab;
+.win-bar{flex:0 0 auto;display:flex;align-items:center;gap:.5em;height:1.9em;padding:0 .55em;cursor:grab;
   background:repeating-linear-gradient(to bottom,var(--phos) 0,var(--phos) 1.5px,#0c0f08 1.5px,#0c0f08 3px);
   border-bottom:1.5px solid var(--phos);user-select:none;}
 .win-bar:active{cursor:grabbing;}
@@ -72,8 +85,11 @@
   border:1.5px solid var(--phos);color:var(--phos-bright);font-size:clamp(11px,2.8cqw,18px);
   line-height:1;cursor:pointer;}
 .win-close:hover{background:var(--phos);color:#0c0f08;}
-.win-body{padding:5.5% 6%;overflow-y:auto;font-size:clamp(12px,3.3cqw,22px);line-height:1.5;
-  color:var(--phos);max-height:100%;}
+/* flex:1 + min-height:0 keeps the body inside the window instead of the old
+   `max-height:100%`, which measured against the whole window and let content
+   run under the title bar. */
+.win-body{flex:1 1 auto;min-height:0;padding:5.5% 6%;overflow-y:auto;
+  font-size:clamp(12px,3.3cqw,22px);line-height:1.5;color:var(--phos);}
 .win-body::-webkit-scrollbar{width:9px;}
 .win-body::-webkit-scrollbar-thumb{background:var(--phos-dim);}
 .win-body::-webkit-scrollbar-track{background:rgba(255,178,89,.06);}
@@ -102,11 +118,12 @@
 
 /* taskbar */
 .taskbar{position:absolute;left:0;right:0;bottom:0;height:7%;min-height:16px;z-index:30;
-  display:flex;align-items:center;gap:.5em;padding:0 1em;border-top:1px solid var(--line);
-  background:rgba(240,166,76,.08);font-size:clamp(10px,3cqw,19px);}
-.task{opacity:.6;padding:0 .5em;cursor:pointer;border:1px solid transparent;}
+  display:flex;align-items:center;gap:.3em;padding:0 .7em;border-top:1px solid var(--line);
+  background:rgba(240,166,76,.08);font-size:clamp(10px,2.6cqw,19px);overflow:hidden;}
+.task{opacity:.6;padding:0 .35em;cursor:pointer;border:1px solid transparent;
+  min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .task.on{opacity:1;border-color:var(--line);background:rgba(255,178,89,.12);color:var(--phos-bright);}
-.taskbar .ts-sp{flex:1;}
-.taskbar .ts-net{color:var(--phos-dim);letter-spacing:.1em;}
+.taskbar .ts-sp{flex:1 1 auto;min-width:0;}
+.taskbar .ts-net{flex:0 0 auto;color:var(--phos-dim);letter-spacing:.1em;white-space:nowrap;}
 
 .dim{color:var(--phos-dim);}

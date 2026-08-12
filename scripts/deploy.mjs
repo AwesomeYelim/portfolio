@@ -104,10 +104,10 @@ console.log(`Deploy: ${ALL ? "ALL files" : changed.join(", ")}`);
 // 1. CDN-backed assets — purge so push is live in seconds.
 const cdnFiles = [];
 if (ALL) {
-  cdnFiles.push("js/scene.js", "js/desktop.js");
+  cdnFiles.push("js/scene.js", "js/desktop.js", "data/profile.web.json");
 } else {
   for (const f of changed) {
-    if (f.startsWith("js/") || f.startsWith("models/") || f.startsWith("assets/")) cdnFiles.push(f);
+    if (f.startsWith("js/") || f.startsWith("models/") || f.startsWith("assets/") || f.startsWith("data/")) cdnFiles.push(f);
   }
 }
 if (cdnFiles.length) {
